@@ -1,0 +1,19 @@
+{% extends "tracker/base.html" %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <a class="back-link" href="{{ object.get_absolute_url }}"><i class="bi bi-arrow-left"></i> Back to application</a>
+      <h1>Delete this application?</h1>
+      <p class="page-sub">{{ object.job_title }} at {{ object.company_name }} will be removed, along with its interviews.</p>
+    </div>
+  </div>
+  <form class="panel form-panel confirm-panel" method="post">
+    {% csrf_token %}
+    <p>This cannot be undone. Only your copy of this record is deleted.</p>
+    <div class="form-actions">
+      <button class="btn btn-danger" type="submit">Delete application</button>
+      <a class="btn btn-light border" href="{{ object.get_absolute_url }}">Keep it</a>
+    </div>
+  </form>
+{% endblock %}

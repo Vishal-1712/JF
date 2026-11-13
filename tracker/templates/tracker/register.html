@@ -1,0 +1,26 @@
+{% extends "tracker/auth_base.html" %}
+
+{% block title %}Create account · JobTrack{% endblock %}
+
+{% block content %}
+  <div class="auth-card">
+    <h2>Create your account</h2>
+    <p class="lede">Your applications stay on this account only.</p>
+    <form method="post" action="{% url 'register' %}" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <div class="row g-3">
+        <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.username %}</div>
+        <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.email %}</div>
+        <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.first_name %}</div>
+        <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.last_name %}</div>
+        <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.password1 %}</div>
+        <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.password2 %}</div>
+      </div>
+      <button class="btn btn-primary w-100" type="submit">Create account</button>
+    </form>
+    <p class="auth-switch">Already registered? <a href="{% url 'login' %}">Log in</a></p>
+  </div>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends "tracker/base.html" %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <a class="back-link" href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'application_list' %}{% endif %}"><i class="bi bi-arrow-left"></i> Back</a>
+      <h1>{{ page_title }}</h1>
+      <p class="page-sub">Required fields are marked. Salary, link, description, and notes can stay blank.</p>
+    </div>
+  </div>
+  <form class="panel form-panel" method="post" novalidate>
+    {% csrf_token %}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+    {% endif %}
+    <div class="row g-3">
+      <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.company_name %}</div>
+      <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.job_title %}</div>
+      <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.location %}</div>
+      <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.salary_package %}</div>
+      <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.job_type %}</div>
+      <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.status %}</div>
+      <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.application_date %}</div>
+      <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.job_url %}</div>
+      <div class="col-12">{% include "tracker/includes/field.html" with field=form.description %}</div>
+      <div class="col-12">{% include "tracker/includes/field.html" with field=form.notes %}</div>
+    </div>
+    <div class="form-actions">
+      <button class="btn btn-primary" type="submit">{% if object %}Save changes{% else %}Save application{% endif %}</button>
+      <a class="btn btn-light border" href="{% if object %}{{ object.get_absolute_url }}{% else %}{% url 'application_list' %}{% endif %}">Cancel</a>
+    </div>
+  </form>
+{% endblock %}

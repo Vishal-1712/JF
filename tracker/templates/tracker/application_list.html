@@ -1,0 +1,109 @@
+{% extends "tracker/base.html" %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>Applications</h1>
+      <p class="page-sub">Search by company or title, then filter and sort.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'application_create' %}"><i class="bi bi-plus-lg"></i> Add application</a>
+  </div>
+
+  <form class="filter-bar" method="get" action="{% url 'application_list' %}">
+    <label class="search-field">
+      <span class="visually-hidden">Search company or job title</span>
+      <i class="bi bi-search"></i>
+      <input class="form-control" type="search" name="q" value="{{ query }}" placeholder="Search company or job title">
+    </label>
+    <label>
+      <span class="visually-hidden">Status</span>
+      <select class="form-select" name="status">
+        <option value="">All statuses</option>
+        {% for value, label in status_choices %}
+          <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      <span class="visually-hidden">Job type</span>
+      <select class="form-select" name="job_type">
+        <option value="">All job types</option>
+        {% for value, label in job_type_choices %}
+          <option value="{{ value }}" {% if selected_job_type == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      <span class="visually-hidden">Sort by application date</span>
+      <select class="form-select" name="sort">
+        <option value="newest" {% if selected_sort == "newest" %}selected{% endif %}>Newest date</option>
+        <option value="oldest" {% if selected_sort == "oldest" %}selected{% endif %}>Oldest date</option>
+      </select>
+    </label>
+    <button class="btn btn-primary" type="submit">Apply</button>
+    {% if filters_active %}
+      <a class="btn btn-light border" href="{% url 'application_list' %}">Clear</a>
+    {% endif %}
+  </form>
+
+  {% if applications %}
+    <div class="panel">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Role</th>
+              <th class="d-none d-md-table-cell">Location</th>
+              <th class="d-none d-lg-table-cell">Type</th>
+              <th>Status</th>
+              <th>Applied</th>
+              <th class="d-none d-lg-table-cell">Interviews</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for application in applications %}
+              <tr>
+                <td>
+                  <a class="row-title" href="{{ application.get_absolute_url }}">{{ application.job_title }}</a>
+                  <span class="row-meta">{{ application.company_name }}</span>
+                </td>
+                <td class="d-none d-md-table-cell">{{ application.location }}</td>
+                <td class="d-none d-lg-table-cell">{{ application.get_job_type_display }}</td>
+                <td><span class="status-badge status-{{ application.status }}">{{ application.get_status_display }}</span></td>
+                <td>{{ application.application_date|date:"d M Y" }}</td>
+                <td class="d-none d-lg-table-cell">{{ application.interview_count }}</td>
+                <td>
+                  <div class="table-actions">
+                    <a class="btn btn-sm btn-light border" href="{{ application.get_absolute_url }}">View</a>
+                    <a class="btn btn-sm btn-light border" href="{% url 'application_edit' application.pk %}">Edit</a>
+                    <a class="btn btn-sm btn-outline-danger" href="{% url 'application_delete' application.pk %}">Delete</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include "tracker/includes/pagination.html" %}
+    </div>
+  {% elif total_for_user %}
+    <div class="panel">
+      <div class="empty-state">
+        <i class="bi bi-funnel"></i>
+        <h3>No applications match</h3>
+        <p>Try another company, title, status, or job type.</p>
+        <a class="btn btn-light border" href="{% url 'application_list' %}">Clear filters</a>
+      </div>
+    </div>
+  {% else %}
+    <div class="panel">
+      <div class="empty-state">
+        <i class="bi bi-inboxes"></i>
+        <h3>Your list is empty</h3>
+        <p>Add a role you have applied for, including ones still in progress.</p>
+        <a class="btn btn-primary" href="{% url 'application_create' %}">Add application</a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

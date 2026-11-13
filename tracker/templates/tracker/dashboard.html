@@ -1,0 +1,148 @@
+{% extends "tracker/base.html" %}
+{% load static %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>Dashboard</h1>
+      <p class="page-sub">Numbers below are counted from your applications and interviews.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'application_create' %}"><i class="bi bi-plus-lg"></i> Add application</a>
+  </div>
+
+  <section class="stat-grid" aria-label="Summary">
+    <article class="stat-card">
+      <span class="stat-icon stat-blue"><i class="bi bi-briefcase"></i></span>
+      <p class="stat-label">Total applications</p>
+      <p class="stat-value">{{ stats.total }}</p>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-amber"><i class="bi bi-calendar-event"></i></span>
+      <p class="stat-label">Interviews scheduled</p>
+      <p class="stat-value">{{ stats.interviews_scheduled }}</p>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-cyan"><i class="bi bi-bookmark-star"></i></span>
+      <p class="stat-label">Shortlisted</p>
+      <p class="stat-value">{{ stats.shortlisted }}</p>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-green"><i class="bi bi-gift"></i></span>
+      <p class="stat-label">Offers received</p>
+      <p class="stat-value">{{ stats.offers }}</p>
+    </article>
+    <article class="stat-card">
+      <span class="stat-icon stat-red"><i class="bi bi-x-circle"></i></span>
+      <p class="stat-label">Rejected</p>
+      <p class="stat-value">{{ stats.rejected }}</p>
+    </article>
+  </section>
+
+  <section class="chart-grid">
+    <article class="panel" data-chart-card>
+      <header class="panel-head">
+        <h2>Status distribution</h2>
+        <p>Every status, including ones you have not used yet.</p>
+      </header>
+      <div class="chart-box">
+        <div class="chart-empty" data-empty hidden>
+          <i class="bi bi-pie-chart"></i>
+          <p>Add an application to see how statuses split.</p>
+        </div>
+        <canvas id="statusChart" aria-label="Application status distribution" role="img"></canvas>
+      </div>
+    </article>
+    <article class="panel">
+      <header class="panel-head">
+        <h2>Monthly applications</h2>
+        <p>Applications dated in the last 6 months.</p>
+      </header>
+      <div class="chart-box">
+        <canvas id="trendChart" aria-label="Monthly application trend" role="img"></canvas>
+      </div>
+    </article>
+  </section>
+
+  <section class="split-grid">
+    <article class="panel">
+      <header class="panel-head panel-head-row">
+        <div>
+          <h2>Recent applications</h2>
+          <p>Latest five by application date.</p>
+        </div>
+        <a href="{% url 'application_list' %}">View all</a>
+      </header>
+      {% if recent_applications %}
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Applied</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for application in recent_applications %}
+                <tr>
+                  <td>
+                    <a class="row-title" href="{{ application.get_absolute_url }}">{{ application.job_title }}</a>
+                    <span class="row-meta">{{ application.company_name }}</span>
+                  </td>
+                  <td><span class="status-badge status-{{ application.status }}">{{ application.get_status_display }}</span></td>
+                  <td>{{ application.application_date|date:"d M Y" }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-inboxes"></i>
+          <h3>No applications yet</h3>
+          <p>When you add one, it will show up here and in the charts.</p>
+          <a class="btn btn-primary" href="{% url 'application_create' %}">Add application</a>
+        </div>
+      {% endif %}
+    </article>
+
+    <article class="panel">
+      <header class="panel-head panel-head-row">
+        <div>
+          <h2>Interviews to follow up</h2>
+          <p>Pending results, soonest first.</p>
+        </div>
+        <a href="{% url 'interview_list' %}">View all</a>
+      </header>
+      {% if follow_ups %}
+        <ul class="follow-list">
+          {% for interview in follow_ups %}
+            <li>
+              <div>
+                <a class="row-title" href="{% url 'interview_edit' interview.pk %}">{{ interview.application.job_title }}</a>
+                <span class="row-meta">{{ interview.application.company_name }} · {{ interview.get_interview_round_display }} · {{ interview.interviewer_name }}</span>
+              </div>
+              <div class="follow-when">
+                <time datetime="{{ interview.scheduled_at|date:'c' }}">{{ interview.scheduled_at|date:"d M, h:i A" }}</time>
+                {% if interview.is_overdue %}<span class="overdue">Overdue</span>{% endif %}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="empty-state">
+          <i class="bi bi-calendar2-check"></i>
+          <h3>No pending interviews</h3>
+          <p>Schedule one from an application, or after you have added a role.</p>
+          <a class="btn btn-outline-primary" href="{% url 'interview_create' %}">Schedule interview</a>
+        </div>
+      {% endif %}
+    </article>
+  </section>
+  {{ chart_data|json_script:"chart-data" }}
+{% endblock %}
+
+{% block extra_js %}
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+  <script src="{% static 'tracker/js/dashboard.js' %}"></script>
+{% endblock %}

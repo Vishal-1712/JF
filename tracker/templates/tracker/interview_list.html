@@ -1,0 +1,110 @@
+{% extends "tracker/base.html" %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>Interviews</h1>
+      <p class="page-sub">Rounds across all of your applications.</p>
+    </div>
+    <a class="btn btn-primary" href="{% url 'interview_create' %}"><i class="bi bi-calendar-plus"></i> Schedule interview</a>
+  </div>
+
+  <form class="filter-bar" method="get" action="{% url 'interview_list' %}">
+    <label class="search-field">
+      <span class="visually-hidden">Search company, title, or interviewer</span>
+      <i class="bi bi-search"></i>
+      <input class="form-control" type="search" name="q" value="{{ query }}" placeholder="Company, title, or interviewer">
+    </label>
+    <label>
+      <span class="visually-hidden">Result</span>
+      <select class="form-select" name="result">
+        <option value="">All results</option>
+        {% for value, label in result_choices %}
+          <option value="{{ value }}" {% if selected_result == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      <span class="visually-hidden">Round</span>
+      <select class="form-select" name="round">
+        <option value="">All rounds</option>
+        {% for value, label in round_choices %}
+          <option value="{{ value }}" {% if selected_round == value %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>
+      <span class="visually-hidden">Sort by date</span>
+      <select class="form-select" name="sort">
+        <option value="latest" {% if selected_sort == "latest" %}selected{% endif %}>Latest date</option>
+        <option value="soonest" {% if selected_sort == "soonest" %}selected{% endif %}>Soonest date</option>
+      </select>
+    </label>
+    <button class="btn btn-primary" type="submit">Apply</button>
+    {% if filters_active %}
+      <a class="btn btn-light border" href="{% url 'interview_list' %}">Clear</a>
+    {% endif %}
+  </form>
+
+  {% if interviews %}
+    <div class="panel">
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>When</th>
+              <th>Role</th>
+              <th class="d-none d-md-table-cell">Round</th>
+              <th class="d-none d-lg-table-cell">Interviewer</th>
+              <th>Result</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for interview in interviews %}
+              <tr>
+                <td>
+                  {{ interview.scheduled_at|date:"d M Y, h:i A" }}
+                  {% if interview.is_overdue %}<span class="overdue">Overdue</span>{% endif %}
+                </td>
+                <td>
+                  <a class="row-title" href="{{ interview.application.get_absolute_url }}">{{ interview.application.job_title }}</a>
+                  <span class="row-meta">{{ interview.application.company_name }}</span>
+                </td>
+                <td class="d-none d-md-table-cell">{{ interview.get_interview_round_display }}</td>
+                <td class="d-none d-lg-table-cell">{{ interview.interviewer_name }}</td>
+                <td><span class="result-badge result-{{ interview.result }}">{{ interview.get_result_display }}</span></td>
+                <td>
+                  <div class="table-actions">
+                    <a class="btn btn-sm btn-light border" href="{% url 'interview_edit' interview.pk %}">Edit</a>
+                    <a class="btn btn-sm btn-outline-danger" href="{% url 'interview_delete' interview.pk %}">Delete</a>
+                  </div>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% include "tracker/includes/pagination.html" %}
+    </div>
+  {% else %}
+    <div class="panel">
+      <div class="empty-state">
+        <i class="bi bi-calendar2-x"></i>
+        {% if filters_active %}
+          <h3>No interviews match</h3>
+          <p>Try another interviewer, result, or round.</p>
+          <a class="btn btn-light border" href="{% url 'interview_list' %}">Clear filters</a>
+        {% elif has_applications %}
+          <h3>No interviews scheduled</h3>
+          <p>Add a round to any application you are moving forward with.</p>
+          <a class="btn btn-primary" href="{% url 'interview_create' %}">Schedule interview</a>
+        {% else %}
+          <h3>Add an application first</h3>
+          <p>Interviews have to belong to one of your job applications.</p>
+          <a class="btn btn-primary" href="{% url 'application_create' %}">Add application</a>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

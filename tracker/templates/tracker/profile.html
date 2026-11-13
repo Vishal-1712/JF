@@ -1,0 +1,56 @@
+{% extends "tracker/base.html" %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <h1>Account</h1>
+      <p class="page-sub">Update your name and email, or change your password.</p>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <div class="stack">
+      <form class="panel form-panel" method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="action" value="account">
+        <h2>Profile</h2>
+        <p class="muted">Username <strong>{{ request.user.username }}</strong> stays the same. You joined {{ request.user.date_joined|date:"d M Y" }}.</p>
+        {% if account_form.non_field_errors %}
+          <div class="alert alert-danger">{{ account_form.non_field_errors }}</div>
+        {% endif %}
+        {% include "tracker/includes/field.html" with field=account_form.first_name %}
+        {% include "tracker/includes/field.html" with field=account_form.last_name %}
+        {% include "tracker/includes/field.html" with field=account_form.email %}
+        <button class="btn btn-primary" type="submit">Save profile</button>
+      </form>
+
+      <form class="panel form-panel" method="post" novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="action" value="password">
+        <h2>Password</h2>
+        <p class="muted">You will stay signed in after a successful change.</p>
+        {% if password_form.non_field_errors %}
+          <div class="alert alert-danger">{{ password_form.non_field_errors }}</div>
+        {% endif %}
+        {% include "tracker/includes/field.html" with field=password_form.old_password %}
+        {% include "tracker/includes/field.html" with field=password_form.new_password1 %}
+        {% include "tracker/includes/field.html" with field=password_form.new_password2 %}
+        <button class="btn btn-primary" type="submit">Update password</button>
+      </form>
+    </div>
+    <aside class="panel summary-card">
+      <h2>Your records</h2>
+      <dl>
+        <div>
+          <dt>Applications</dt>
+          <dd>{{ application_count }}</dd>
+        </div>
+        <div>
+          <dt>Interviews</dt>
+          <dd>{{ interview_count }}</dd>
+        </div>
+      </dl>
+      <a class="btn btn-light border w-100" href="{% url 'application_list' %}">Go to applications</a>
+    </aside>
+  </div>
+{% endblock %}

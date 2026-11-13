@@ -1,0 +1,24 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Page not found · JobTrack</title>
+  <link rel="icon" href="{% static 'tracker/favicon.svg' %}" type="image/svg+xml">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="{% static 'tracker/css/app.css' %}" rel="stylesheet">
+</head>
+<body class="auth-body">
+  <main class="missing-page">
+    <p class="stat-label">404</p>
+    <h1>That page is not here</h1>
+    <p>The link may be old, or the record may belong to another account.</p>
+    {% if request.user.is_authenticated %}
+      <a class="btn btn-primary" href="{% url 'dashboard' %}">Back to dashboard</a>
+    {% else %}
+      <a class="btn btn-primary" href="{% url 'login' %}">Log in</a>
+    {% endif %}
+  </main>
+</body>
+</html>

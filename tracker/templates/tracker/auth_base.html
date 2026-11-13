@@ -1,0 +1,43 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}JobTrack{% endblock %}</title>
+  <link rel="icon" href="{% static 'tracker/favicon.svg' %}" type="image/svg+xml">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link href="{% static 'tracker/css/app.css' %}" rel="stylesheet">
+</head>
+<body class="auth-body">
+  <div class="auth-shell">
+    <aside class="auth-aside">
+      <div class="brand brand-light">
+        <span class="brand-mark" aria-hidden="true"><i class="bi bi-briefcase-fill"></i></span>
+        <span>
+          <strong>JobTrack</strong>
+          <small>Application Tracker</small>
+        </span>
+      </div>
+      <div class="auth-copy">
+        <h1>Keep every application, interview, and offer in one place.</h1>
+        <ul>
+          <li><i class="bi bi-check2-circle"></i> Statuses from applied through offer</li>
+          <li><i class="bi bi-check2-circle"></i> Interview rounds with notes and results</li>
+          <li><i class="bi bi-check2-circle"></i> A dashboard built from your own records</li>
+        </ul>
+      </div>
+      <p class="auth-foot">A private tracker for your job search.</p>
+    </aside>
+    <main class="auth-panel">
+      <div class="auth-mobile-brand">
+        <span class="brand-mark" aria-hidden="true"><i class="bi bi-briefcase-fill"></i></span>
+        <strong>JobTrack</strong>
+      </div>
+      {% include "tracker/includes/messages.html" %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</body>
+</html>

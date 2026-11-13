@@ -1,0 +1,46 @@
+{% extends "tracker/base.html" %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <a class="back-link" href="{% url 'interview_list' %}"><i class="bi bi-arrow-left"></i> All interviews</a>
+      <h1>{{ page_title }}</h1>
+      <p class="page-sub">Each interview stays attached to one of your applications.</p>
+    </div>
+  </div>
+
+  {% if has_applications or object %}
+    <form class="panel form-panel" method="post" novalidate>
+      {% csrf_token %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+      {% endif %}
+      <div class="row g-3">
+        <div class="col-12">{% include "tracker/includes/field.html" with field=form.application %}</div>
+        <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.scheduled_at %}</div>
+        <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.interview_round %}</div>
+        <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.interviewer_name %}</div>
+        <div class="col-md-6">{% include "tracker/includes/field.html" with field=form.result %}</div>
+        <div class="col-12">{% include "tracker/includes/field.html" with field=form.feedback %}</div>
+      </div>
+      <div class="form-check mb-4">
+        {{ form.update_status }}
+        <label class="form-check-label" for="{{ form.update_status.id_for_label }}">{{ form.update_status.label }}</label>
+        <div class="form-text">Selected, rejected, and offer statuses are left as they are.</div>
+      </div>
+      <div class="form-actions">
+        <button class="btn btn-primary" type="submit">{% if object %}Save interview{% else %}Schedule interview{% endif %}</button>
+        <a class="btn btn-light border" href="{% if object %}{{ object.application.get_absolute_url }}{% else %}{% url 'interview_list' %}{% endif %}">Cancel</a>
+      </div>
+    </form>
+  {% else %}
+    <div class="panel">
+      <div class="empty-state">
+        <i class="bi bi-briefcase"></i>
+        <h3>Add an application first</h3>
+        <p>An interview needs a job application to belong to.</p>
+        <a class="btn btn-primary" href="{% url 'application_create' %}">Add application</a>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}

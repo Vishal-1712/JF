@@ -1,0 +1,111 @@
+{% extends "tracker/base.html" %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <a class="back-link" href="{% url 'application_list' %}"><i class="bi bi-arrow-left"></i> All applications</a>
+      <h1>{{ application.job_title }}</h1>
+      <p class="page-sub">{{ application.company_name }} · {{ application.location }}</p>
+    </div>
+    <div class="page-actions">
+      <a class="btn btn-primary" href="{% url 'interview_create' %}?application={{ application.pk }}"><i class="bi bi-calendar-plus"></i> Schedule interview</a>
+      <a class="btn btn-light border" href="{% url 'application_edit' application.pk %}">Edit</a>
+      <a class="btn btn-outline-danger" href="{% url 'application_delete' application.pk %}">Delete</a>
+    </div>
+  </div>
+
+  <div class="detail-grid">
+    <section class="panel">
+      <div class="detail-badges">
+        <span class="status-badge status-{{ application.status }}">{{ application.get_status_display }}</span>
+        <span class="type-badge">{{ application.get_job_type_display }}</span>
+      </div>
+      <dl class="detail-list">
+        <div>
+          <dt>Company</dt>
+          <dd>{{ application.company_name }}</dd>
+        </div>
+        <div>
+          <dt>Job title</dt>
+          <dd>{{ application.job_title }}</dd>
+        </div>
+        <div>
+          <dt>Location</dt>
+          <dd>{{ application.location }}</dd>
+        </div>
+        <div>
+          <dt>Salary package</dt>
+          <dd>{% if application.salary_package %}{{ application.salary_package }}{% else %}Not specified{% endif %}</dd>
+        </div>
+        <div>
+          <dt>Application date</dt>
+          <dd>{{ application.application_date|date:"d M Y" }}</dd>
+        </div>
+        <div>
+          <dt>Job posting</dt>
+          <dd>
+            {% if application.job_url %}
+              <a href="{{ application.job_url }}" target="_blank" rel="noopener noreferrer">Open posting</a>
+            {% else %}
+              Not specified
+            {% endif %}
+          </dd>
+        </div>
+      </dl>
+      <div class="prose-block">
+        <h2>Description</h2>
+        {% if application.description %}
+          <p>{{ application.description|linebreaksbr }}</p>
+        {% else %}
+          <p class="muted">No description added.</p>
+        {% endif %}
+      </div>
+      <div class="prose-block">
+        <h2>Personal notes</h2>
+        {% if application.notes %}
+          <p>{{ application.notes|linebreaksbr }}</p>
+        {% else %}
+          <p class="muted">No notes yet.</p>
+        {% endif %}
+      </div>
+      <p class="muted stamp">Updated {{ application.updated_at|date:"d M Y, h:i A" }}</p>
+    </section>
+
+    <aside class="panel">
+      <header class="panel-head panel-head-row">
+        <div>
+          <h2>Interviews</h2>
+          <p>{{ interviews|length }} linked to this application.</p>
+        </div>
+      </header>
+      {% if interviews %}
+        <ul class="interview-stack">
+          {% for interview in interviews %}
+            <li>
+              <div class="interview-top">
+                <strong>{{ interview.get_interview_round_display }}</strong>
+                <span class="result-badge result-{{ interview.result }}">{{ interview.get_result_display }}</span>
+              </div>
+              <p class="row-meta">{{ interview.scheduled_at|date:"d M Y, h:i A" }} · {{ interview.interviewer_name }}</p>
+              {% if interview.is_overdue %}<p class="overdue">Overdue</p>{% endif %}
+              {% if interview.feedback %}
+                <p class="feedback">{{ interview.feedback|linebreaksbr }}</p>
+              {% endif %}
+              <div class="table-actions">
+                <a class="btn btn-sm btn-light border" href="{% url 'interview_edit' interview.pk %}">Edit</a>
+                <a class="btn btn-sm btn-outline-danger" href="{% url 'interview_delete' interview.pk %}">Delete</a>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="empty-state compact">
+          <i class="bi bi-calendar-event"></i>
+          <h3>No interviews yet</h3>
+          <p>Add a round when this role moves forward.</p>
+        </div>
+      {% endif %}
+      <a class="btn btn-primary w-100" href="{% url 'interview_create' %}?application={{ application.pk }}">Schedule interview</a>
+    </aside>
+  </div>
+{% endblock %}

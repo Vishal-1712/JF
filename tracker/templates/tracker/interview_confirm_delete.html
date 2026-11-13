@@ -1,0 +1,19 @@
+{% extends "tracker/base.html" %}
+
+{% block content %}
+  <div class="page-head">
+    <div>
+      <a class="back-link" href="{{ object.application.get_absolute_url }}"><i class="bi bi-arrow-left"></i> Back to application</a>
+      <h1>Delete this interview?</h1>
+      <p class="page-sub">{{ object.get_interview_round_display }} for {{ object.application.job_title }} at {{ object.application.company_name }}.</p>
+    </div>
+  </div>
+  <form class="panel form-panel confirm-panel" method="post">
+    {% csrf_token %}
+    <p>{{ object.scheduled_at|date:"d M Y, h:i A" }} with {{ object.interviewer_name }} will be removed. The application stays.</p>
+    <div class="form-actions">
+      <button class="btn btn-danger" type="submit">Delete interview</button>
+      <a class="btn btn-light border" href="{{ object.application.get_absolute_url }}">Keep it</a>
+    </div>
+  </form>
+{% endblock %}

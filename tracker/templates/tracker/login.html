@@ -1,0 +1,21 @@
+{% extends "tracker/auth_base.html" %}
+
+{% block title %}Log in · JobTrack{% endblock %}
+
+{% block content %}
+  <div class="auth-card">
+    <h2>Welcome back</h2>
+    <p class="lede">Log in to your application tracker.</p>
+    <form method="post" action="{% url 'login' %}" novalidate>
+      {% csrf_token %}
+      {% if next %}<input type="hidden" name="next" value="{{ next }}">{% endif %}
+      {% if form.non_field_errors %}
+        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+      {% endif %}
+      {% include "tracker/includes/field.html" with field=form.username %}
+      {% include "tracker/includes/field.html" with field=form.password %}
+      <button class="btn btn-primary w-100" type="submit">Log in</button>
+    </form>
+    <p class="auth-switch">New here? <a href="{% url 'register' %}">Create an account</a></p>
+  </div>
+{% endblock %}
